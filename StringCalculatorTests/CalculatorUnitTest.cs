@@ -51,5 +51,21 @@ namespace StringCalculatorTests
             Assert.Equal(expected, sum);
         }
 
+        /// <summary>
+        /// 3.	Allow the Add method to handle new lines between numbers (instead of commas). 
+        ///   1.	the following input is ok:  “1\n2,3”  (will equal 6)
+        ///   2.	the following input is NOT ok:  “1,\n” (not need to prove it - just clarifying)
+        /// </summary>
+        [Theory]
+        [InlineData("1\n2", 3)]
+        [InlineData("1,2\n3", 6)]
+        [InlineData("1\n2,3", 6)]
+        [InlineData("1\n2,3\n4", 10)]
+        [InlineData("1\n2\n3\n4\n5", 15)]
+        public void TestFunctionality3(string numberString, int expected)
+        {
+            int sum = calc.Add(numberString);
+            Assert.Equal(expected, sum);
+        }
     }
 }
