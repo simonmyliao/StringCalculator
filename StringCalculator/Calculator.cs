@@ -23,7 +23,8 @@ namespace StringCalculator
             else
             {
                 int sum = 0;
-                string[] numbers = numberString.Split(',');
+                string[] delimiters = new string[] { ",", "\n" };
+                string[] numbers = numberString.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var number in numbers)
                 {
