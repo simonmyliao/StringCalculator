@@ -23,8 +23,18 @@ namespace StringCalculator
             else
             {
                 int sum = 0;
-                string[] delimiters = new string[] { ",", "\n" };
-                string[] numbers = numberString.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+                int startOfNumberString = 0;
+                string customDelimiter = GetCustomDelimiter(numberString);
+                List<string> delimiterList = new List<string>();
+                delimiterList.Add(",");
+                delimiterList.Add("\n");
+                if (customDelimiter != null)
+                {
+                    delimiterList.Add(customDelimiter);
+                    startOfNumberString = numberString.IndexOf("\n") + 1;  //used to remove the custom delimiter portion of string
+                }
+
+                string[] numbers = numberString.Substring(startOfNumberString).Split(delimiterList.ToArray(), StringSplitOptions.RemoveEmptyEntries);
 
                 foreach (var number in numbers)
                 {
@@ -33,6 +43,21 @@ namespace StringCalculator
 
                 return sum;
             }
+        }
+
+        public string GetCustomDelimiter(string numberString)
+        {
+            int endDelimiterMarker = 0;
+
+            if (numberString.Length >= 2 && numberString.Substring(0,2) == "//")
+            {
+                endDelimiterMarker = numberString.IndexOf("\n");
+                if (endDelimiterMarker != -1)
+                {
+                    return numberString.Substring(2, endDelimiterMarker - 2);
+                }
+            }
+            return null;
         }
     }
 }

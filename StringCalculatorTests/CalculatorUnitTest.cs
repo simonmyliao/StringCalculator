@@ -37,7 +37,7 @@ namespace StringCalculatorTests
         /// </summary>
         [Theory]
         [InlineData("", 0)]
-        [InlineData("1", 1)]
+        [InlineData("99", 99)]
         [InlineData("1,2", 3)]
         [InlineData("1,2,3", 6)]
         [InlineData("1,2,3,4", 10)]
@@ -66,6 +66,39 @@ namespace StringCalculatorTests
         {
             int sum = calc.Add(numberString);
             Assert.Equal(expected, sum);
+        }
+
+        /// <summary>
+        /// 4.	Support user providing there own delimiters
+        ///   1.	to change a delimiter, the beginning of the string will contain a separate line that looks like this: 
+        ///   2.	“//[delimiter]\n[numbers…]” for example “//;\n1;2” should return three where the default delimiter is ‘;’ .
+        ///   3.	the first line is optional.all existing scenarios should still be supported
+        /// </summary>
+        [Theory]
+        [InlineData("//;\n1;2", 3)]
+        [InlineData("//;\n1,2\n3;4", 10)]
+        [InlineData("//*\n1\n2*3", 6)]
+        [InlineData("//&\n1\n2&3,4\n5", 15)]
+        public void TestFunctionality4(string numberString, int expected)
+        {
+            int sum = calc.Add(numberString);
+            Assert.Equal(expected, sum);
+        }
+
+        /// <summary>
+        /// Tests retrieval of custom delimiters in requirement 4
+        /// returns null if no custom delimiter is found, otherwise should return one delimiter
+        /// </summary>
+        /// <param name="numberString"></param>
+        /// <param name="expected"></param>
+        [Theory]
+        [InlineData("//;\n1;2", ";")]
+        [InlineData("//;\n1;2\n4", ";")]
+        [InlineData("1,2\n4", null)]  
+        public void TestDelimiter(string numberString, string expected)
+        {
+            string delimiter = calc.GetCustomDelimiter(numberString);
+            Assert.Equal(expected, delimiter);
         }
     }
 }
