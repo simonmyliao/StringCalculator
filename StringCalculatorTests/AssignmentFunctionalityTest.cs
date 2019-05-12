@@ -125,7 +125,25 @@ namespace StringCalculatorTests
             //Assert
             Assert.Contains("Detected invalid input, negative numbers are not allowed.  Negative Detected:", ex.Message);
             Assert.Contains(negativeList, ex.Message);
+        }
 
+        /// <summary>
+        /// Tests functionality in requirement 6.
+        /// 6.	Numbers bigger than 1000 should be ignored, so adding 2 + 1001  = 2
+        /// </summary>
+        [Theory]
+        [InlineData("2,1001", 2)]
+        [InlineData("//;\n2;1001", 2)]
+        [InlineData("//;\n1,2\n3000;4", 7)]
+        [InlineData("//*\n1\n2*34442", 3)]
+        [InlineData("//&\n1\n2&3003,40000\n5", 8)]
+        public void TestFunctionality6(string numberString, int expected)
+        {
+            //Act
+            int sum = calc.Add(numberString);
+
+            //Assert
+            Assert.Equal(expected, sum);
         }
     }
 }

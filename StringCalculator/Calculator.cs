@@ -101,7 +101,12 @@ namespace StringCalculator
                 {
                     negativeInts.Add(number);
                 }
-                sum = sum += curNum;
+
+                //numbers that are 1001 or greater will be ignored according to requirement 6
+                if (curNum <= 1000)  
+                {
+                    sum = sum += curNum;
+                }                
             }
             
             //Detect negative numbers
