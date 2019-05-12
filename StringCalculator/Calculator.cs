@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Text.RegularExpressions;
 using StringCalculator.Exceptions;
 
 namespace StringCalculator
@@ -47,17 +47,59 @@ namespace StringCalculator
         public string[] ParseNumbers(string numberString)
         {
             int startOfNumberString = 0;
-            string customDelimiter = GetCustomNonBracketedDelimiter(numberString);
             List<string> delimiterList = new List<string>();
             delimiterList.Add(",");
             delimiterList.Add("\n");
-            if (customDelimiter != null)
+
+            string[] customDelimiters = GetCustomDelimiters(numberString);
+            foreach (string customDelimiter in customDelimiters)
             {
                 delimiterList.Add(customDelimiter);
                 startOfNumberString = numberString.IndexOf("\n") + 1;  //used to remove the custom delimiter portion of string
-            }
+            }         
+
+            //string customDelimiter = GetCustomNonBracketedDelimiter(numberString);
+            /*if (customDelimiter != null)
+            {
+                delimiterList.Add(customDelimiter);
+                startOfNumberString = numberString.IndexOf("\n") + 1;  //used to remove the custom delimiter portion of string
+            }*/
 
             return numberString.Substring(startOfNumberString).Split(delimiterList.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+        }
+
+        public string[] GetCustomDelimiters(string numberString)
+        {
+            //use regex to pull just the portion of the string with delimiters
+            //This is the area between the opening // and the first \n
+            string delimiterDefinedPattern = @"^//(\[?.*\]?)\n";
+            Match delimitersFound = Regex.Match(numberString, delimiterDefinedPattern);
+
+            if (delimitersFound.Success)
+            {
+                int delimiterCharLength = delimitersFound.Value.Length - 3;  //subtract 3 to account for the // and \n
+                string delimiterPortion = delimitersFound.Value.Substring(2, delimiterCharLength);
+                                
+                //use second regex to determine if there is a matchig set of open and close brackets
+                string bracketSetPattern = @"^(\[.*\])";
+                Match bracketedDelimitersFound = Regex.Match(delimiterPortion, bracketSetPattern);
+
+                
+                if (bracketedDelimitersFound.Success)
+                {
+                    //todo for now
+                    return new string[] { "todo" };
+                }
+                else
+                {
+                    //handle non-bracketed (single) delimiter
+                    return new string[] { delimiterPortion };
+                }
+            }
+            else
+            {
+                return new string[] {};
+            }
         }
 
         /// <summary>
@@ -69,6 +111,7 @@ namespace StringCalculator
         {
             int endDelimiterMarker = 0;
 
+            //determine if custom delimiters are defined based off the beginning of the string
             if (numberString.Length >= 2 && numberString.Substring(0,2) == "//")
             {
                 endDelimiterMarker = numberString.IndexOf("\n");
