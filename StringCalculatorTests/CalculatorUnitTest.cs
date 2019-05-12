@@ -182,6 +182,25 @@ namespace StringCalculatorTests
         }
 
         /// <summary>
+        /// Tests that GetDelimiterPortion returns only the section defining the delimiters
+        /// </summary>
+        /// <param name="numberString"></param>
+        /// <param name="expected">The portion of the string defining the delimiters.</param>
+        [Theory]
+        [InlineData("//&\n1,2&3", "&")]
+        [InlineData("//[&]\n1,2&3", "[&]")]
+        [InlineData("//[&][*]\n1,2&3,*4", "[&][*]")]
+        [InlineData("//[&&&][**]\n1**2&&&3", "[&&&][**]")]
+        public void GetDelimiterPortion_WithCustomBracketedDelimiters_ReturnDelimiterString(string numberString, string expected)
+        {
+            //Act
+            string delimiterPortion = calc.GetDelimiterPortion(numberString);
+
+            //Assert
+            Assert.Equal(expected, delimiterPortion);
+        }
+
+        /// <summary>
         /// Tests retrieval of a single non bracketed custom delimiter
         /// </summary>
         /// <param name="delimiterPortion"></param>

@@ -162,5 +162,22 @@ namespace StringCalculatorTests
             //Assert
             Assert.Equal(expected, sum);
         }
+
+        /// <summary>
+        /// Tests functionality in requirement 8.
+        /// 8.	Allow multiple delimiters like this:  “//[delim1][delim2]\n” for example “//[*][%]\n1*2%3” should return 6.
+        /// </summary>
+        [Theory]
+        [InlineData("//[*][&]\n1*2&3", 6)]
+        [InlineData("//[;]\n2;1001", 2)]
+        [InlineData("//[&][*][;]\n1&2;3*3", 9)]
+        public void TestFunctionality8(string numberString, int expected)
+        {
+            //Act
+            int sum = calc.Add(numberString);
+
+            //Assert
+            Assert.Equal(expected, sum);
+        }
     }
 }
