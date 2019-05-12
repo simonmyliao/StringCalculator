@@ -236,6 +236,28 @@ namespace StringCalculatorTests
         }
 
         /// <summary>
+        /// Tests retrieval of a multiple bracketed custom delimiters
+        /// </summary>
+        /// <param name="delimiterPortion"></param>
+        /// <param name="expectedAt0">The output expected array postion 0</param>
+        /// <param name="expectedAt1">The output expected array postion 1</param>
+        /// <param name="expectedAt2">The output expected array postion 2</param>
+        [Theory]
+        [InlineData("[;][^][&]", ";", "^", "&")]
+        [InlineData("[&][*][;]", "&", "*", ";")]
+        [InlineData("[&&][*][**]", "&&", "*", "**")]
+        public void GetCustomDelimiter_MultipleBracketedDelimter_ReturnsDelimiters(string delimiterPortion, string expectedAt0, string expectedAt1, string expectedAt2)
+        {
+            //Act
+            string[] delimiter = calc.GetCustomDelimiters(delimiterPortion);
+
+            //Assert
+            Assert.Equal(expectedAt0, delimiter[0]);
+            Assert.Equal(expectedAt1, delimiter[1]);
+            Assert.Equal(expectedAt2, delimiter[2]);
+        }
+
+        /// <summary>
         /// Tests the Add method in general
         /// More in depth testing per requirement of assignment is in AssignmentFunctionalityTests.cs
         /// </summary>

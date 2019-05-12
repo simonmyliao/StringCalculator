@@ -179,5 +179,22 @@ namespace StringCalculatorTests
             //Assert
             Assert.Equal(expected, sum);
         }
+
+        /// <summary>
+        /// Tests functionality in requirement 9.
+        /// 9.	Make sure you can also handle multiple delimiters with length longer than one char
+        /// </summary>
+        [Theory]
+        [InlineData("//[***][&&&]\n1***1&&&1,1", 4)]
+        [InlineData("//[&&][*][;*;]\n1,1,*1&&1;*;1,1001", 5)]
+        [InlineData("//[&&][*][**][***]\n1,1,&&1***1*1**1,1001", 6)]
+        public void TestFunctionality9(string numberString, int expected)
+        {
+            //Act
+            int sum = calc.Add(numberString);
+
+            //Assert
+            Assert.Equal(expected, sum);
+        }
     }
 }
