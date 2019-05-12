@@ -20,6 +20,10 @@ namespace StringCalculatorTests
             calc = new Calculator();
         }
 
+        /// <summary>
+        /// Test summing of regular set of integers
+        /// No numbers larger then 1000
+        /// </summary>
         [Fact]
         public void SumInput_ArrayOfNumberStrings_ReturnsSum()
         {
@@ -31,6 +35,40 @@ namespace StringCalculatorTests
 
             //Assert
             Assert.Equal(6, sum);
+        }
+
+        /// <summary>
+        /// Test summing of an empty set of numbers
+        /// </summary>
+        [Fact]
+        public void SumInput_WithEmptyArrayOfNumberStrings_ReturnsSum()
+        {
+            //Arrange
+            string[] numbers = new string[] {};
+
+            //Act
+            int sum = calc.SumInput(numbers);
+
+            //Assert
+            Assert.Equal(0, sum);
+        }
+
+        /// <summary>
+        /// Test summing of a set of integers that includes numbers larger then 1000
+        /// Numbers larger then 1000 will be ignored.  1000 is okay, 1001 and higher is ignored
+        /// Numbers larger then can fit in an int32 are out of the scope of this assignment and wont be handled for.
+        /// </summary>
+        [Fact]
+        public void SumInput_ArrayOfNumberStringsWithGreaterThen1000_ReturnsSum()
+        {
+            //Arrange
+            string[] numbers = new string[] { "99", "1000", "1001", "1003" };
+
+            //Act
+            int sum = calc.SumInput(numbers);
+
+            //Assert
+            Assert.Equal(1099, sum);
         }
 
         /// <summary>
