@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using StringCalculator.Exceptions;
 
 namespace StringCalculator
 {
@@ -7,7 +8,7 @@ namespace StringCalculator
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Please enter string and press Enter to coninue...");
+            Console.WriteLine("Please enter string and press Enter to continue...");
             string enteredString = Console.ReadLine();
 
             Console.WriteLine($"\nCalling Add method with input string: {enteredString}\n");
@@ -20,12 +21,21 @@ namespace StringCalculator
                 int sum = calc.Add(filteredString);
                 Console.WriteLine($"The sum is: {sum}\n");
             }
+            catch (FormatException fex)
+            {
+                Console.WriteLine("Sum could not be calculated.  Detected string that could not be converted to an integer.  Please check your input is valid.");
+                Console.WriteLine(fex.Message);
+            }        
+            catch (NegativeIntegerException niex)
+            {
+                Console.WriteLine("Sum could not be calculated.  Detected one or more negative integers.  Please check your input is valid.");
+                Console.WriteLine(niex.Message);
+            }
             catch (Exception ex)
             {
-                Console.WriteLine("Sum could not be calculated.  Please check your input is valid\n");
+                Console.WriteLine("Sum could not be calculated. Please check your input is valid.");
                 Console.WriteLine(ex.Message);
-                Console.WriteLine(ex.StackTrace);
-            }            
+            }
 
             Console.WriteLine("\nPress Enter key to exit");
             Console.ReadLine();
@@ -42,7 +52,5 @@ namespace StringCalculator
         {
             return Regex.Unescape(enteredString);
         }
-
-
     }
 }

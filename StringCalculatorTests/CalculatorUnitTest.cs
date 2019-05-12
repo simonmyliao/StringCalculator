@@ -1,8 +1,16 @@
 using StringCalculator;
+using StringCalculator.Exceptions;
+using System;
 using Xunit;
 
 namespace StringCalculatorTests
 {
+    //*********************************************************************************************************************************************/
+    // These are unit test for individual methods in Calculator.cs.  
+    // If you want to validate the assignment by requirements, see AssignmentFunctionalityTests.cs
+    //*********************************************************************************************************************************************/
+
+
     public class CalculatorUnitTest
     {
         Calculator calc;
@@ -12,81 +20,104 @@ namespace StringCalculatorTests
             calc = new Calculator();
         }
 
+        [Fact]
+        public void SumInput_ArrayOfNumberStrings_ReturnsSum()
+        {
+            //Arrange
+            string[] numbers = new string[] { "1", "2", "3" };
+
+            //Act
+            int sum = calc.SumInput(numbers);
+
+            //Assert
+            Assert.Equal(6, sum);
+        }
+
         /// <summary>
-        /// Tests functionality in requirement 1.
-        /// 1.	Create a simple String calculator with a method int Add(string numbers) 
-        /// 1.	The method can take 0, 1 or 2 numbers, and will return their sum(for an empty string it will return 0) for example “” or “1” or “1,2”//
+        /// Tests that only integer numbers can be passed in.
+        /// Letters, decimals, non defined delimiters should all throw FormatException.
         /// </summary>
         [Fact]
-        public void TestFunctionality1()
+        public void SumInput_NonNumeric_FormatExceptionThrown()
         {
-            int sum = calc.Add("");
-            Assert.Equal(0, sum);
+            //Arrange
+            string[] numbers = new string[] { "1", "2", "bad data" };
 
-            sum = calc.Add("1");
-            Assert.Equal(1, sum);
-
-            sum = calc.Add("1,2");
-            Assert.Equal(3, sum);
+            //Act and Assert
+            var ex = Assert.Throws<FormatException>(() => calc.SumInput(numbers));
         }
 
         /// <summary>
-        /// Tests functionality in requirement 2.  No changes to the Add method were needed so we are just adding tests to prove it works for empty and unlimited strings.
-        /// 2.	Start with the simplest test case of an empty string and move to 1 and two numbers
-        /// 2.	Allow the Add method to handle an unknown amount of numbers
+        /// Tests that only positive integer numbers can be passed in.
+        /// Negative numbers will throw an NegativeIntegerException and will be listed in the message
+        [Fact]
+        public void SumInput_Negatives_NegativeIntegerExceptionThrown()
+        {
+            //Arrange
+            string[] numbers = new string[] { "1", "2", "-3" };
+            string negativeList = "-3";
+
+            //Act
+            var ex = Assert.Throws<NegativeIntegerException>(() => calc.SumInput(numbers));
+
+            //Assert
+            Assert.Contains("Detected invalid input, negative numbers are not allowed.  Negative Detected:", ex.Message);
+            Assert.Contains(negativeList, ex.Message);
+        }
+
+        /// <summary>
+        /// Tests that the default delimiters of , and \n will separate the numbers into an array of strings
         /// </summary>
-        [Theory]
-        [InlineData("", 0)]
-        [InlineData("99", 99)]
-        [InlineData("1,2", 3)]
-        [InlineData("1,2,3", 6)]
-        [InlineData("1,2,3,4", 10)]
-        [InlineData("1,2,3,4,5", 15)]
-        [InlineData("1,2,3,4,5,6", 21)]
-        [InlineData("1,2,3,4,5,6,7", 28)]
-        [InlineData("1,2,3,4,5,6,7,8", 36)]
-        public void TestFunctionality2(string numberString, int expected)
+        [Fact]
+        public void ParseNumbers_WithoutCustomDelimiters_ReturnsStringArrayOfNumbers()
         {
-            int sum = calc.Add(numberString);
-            Assert.Equal(expected, sum);
+            //Act
+            string[] set1 = calc.ParseNumbers("1,2,3");
+            string[] set2 = calc.ParseNumbers("1\n2\n3");
+            string[] set3 = calc.ParseNumbers("1,2\n3");
+
+            //Assert
+            Assert.Equal("1", set1[0]);
+            Assert.Equal("2", set1[1]);
+            Assert.Equal("3", set1[2]);
+
+            Assert.Equal("1", set2[0]);
+            Assert.Equal("2", set2[1]);
+            Assert.Equal("3", set2[2]);
+
+            Assert.Equal("1", set3[0]);
+            Assert.Equal("2", set3[1]);
+            Assert.Equal("3", set3[2]);
         }
 
         /// <summary>
-        /// 3.	Allow the Add method to handle new lines between numbers (instead of commas). 
-        ///   1.	the following input is ok:  “1\n2,3”  (will equal 6)
-        ///   2.	the following input is NOT ok:  “1,\n” (not need to prove it - just clarifying)
+        /// Tests that a single custom delimiter will separate the numbers into an array of strings
+        /// The Delimiter can be multiple chars long.
         /// </summary>
-        [Theory]
-        [InlineData("1\n2", 3)]
-        [InlineData("1,2\n3", 6)]
-        [InlineData("1\n2,3", 6)]
-        [InlineData("1\n2,3\n4", 10)]
-        [InlineData("1\n2\n3\n4\n5", 15)]
-        public void TestFunctionality3(string numberString, int expected)
+        [Fact]
+        public void ParseNumbers_WithCustomDelimiters_ReturnsStringArrayOfNumbers()
         {
-            int sum = calc.Add(numberString);
-            Assert.Equal(expected, sum);
-        }
+            //Act
+            string[] set1 = calc.ParseNumbers("//;\n1;2;3");
+            string[] set2 = calc.ParseNumbers("//&\n1&2\n3");
+            string[] set3 = calc.ParseNumbers("//**\n1**2\n3");
 
-        /// <summary>
-        /// 4.	Support user providing there own delimiters
-        ///   1.	to change a delimiter, the beginning of the string will contain a separate line that looks like this: 
-        ///   2.	“//[delimiter]\n[numbers…]” for example “//;\n1;2” should return three where the default delimiter is ‘;’ .
-        ///   3.	the first line is optional.all existing scenarios should still be supported
-        /// </summary>
-        [Theory]
-        [InlineData("//;\n1;2", 3)]
-        [InlineData("//;\n1,2\n3;4", 10)]
-        [InlineData("//*\n1\n2*3", 6)]
-        [InlineData("//&\n1\n2&3,4\n5", 15)]
-        public void TestFunctionality4(string numberString, int expected)
-        {
-            int sum = calc.Add(numberString);
-            Assert.Equal(expected, sum);
-        }
+            //Assert
+            Assert.Equal("1", set1[0]);
+            Assert.Equal("2", set1[1]);
+            Assert.Equal("3", set1[2]);
 
+            Assert.Equal("1", set2[0]);
+            Assert.Equal("2", set2[1]);
+            Assert.Equal("3", set2[2]);
+
+            Assert.Equal("1", set3[0]);
+            Assert.Equal("2", set3[1]);
+            Assert.Equal("3", set3[2]);
+        }
+        
         /// <summary>
-        /// Tests retrieval of custom delimiters in requirement 4
+        /// Tests retrieval of a single custom delimiter
         /// returns null if no custom delimiter is found, otherwise should return one delimiter
         /// </summary>
         /// <param name="numberString"></param>
@@ -95,10 +126,67 @@ namespace StringCalculatorTests
         [InlineData("//;\n1;2", ";")]
         [InlineData("//;\n1;2\n4", ";")]
         [InlineData("1,2\n4", null)]  
-        public void TestDelimiter(string numberString, string expected)
+        public void GetCustomDelimiter_SingleDelimter_ReturnsDelimiter(string numberString, string expected)
         {
+            //Act
             string delimiter = calc.GetCustomDelimiter(numberString);
+
+            //Assert
             Assert.Equal(expected, delimiter);
         }
+
+        /// <summary>
+        /// Tests the Add method in general
+        /// More in depth testing per requirement of assignment is in AssignmentFunctionalityTests.cs
+        /// </summary>
+        /// <param name="numberString"></param>
+        /// <param name="expected"></param>
+        [Theory]
+        [InlineData("", 0)]
+        [InlineData("4", 4)]
+        [InlineData("1,22", 23)]
+        [InlineData("//&\n1\n2&3,4,5", 15)]
+        public void Add_NumberString_ReturnsSum(string numberString, int expected)
+        {
+            //Act
+            int sum = calc.Add(numberString);
+
+            //Assert
+            Assert.Equal(expected, sum);
+        }
+
+        /// <summary>
+        /// Tests that only integer numbers can be passed in.
+        /// Letters, decimals, non defined delimiters should all throw FormatException.
+        /// </summary>
+        [Theory]
+        [InlineData("1;-2")]
+        [InlineData("1.00001")]
+        [InlineData("//;\n1,2\n3;b")]
+        [InlineData("//*\n-1\nc*d")]
+        public void Add_NonNumeric_FormatExceptionThrown(string numberString)
+        {
+            //Act and Assert
+            var ex = Assert.Throws<FormatException>(() => calc.Add(numberString));
+        }
+
+        /// <summary>
+        /// Tests that only positive integer numbers can be passed in.
+        /// Negative numbers will throw an NegativeIntegerException and will be listed in the message
+        [Theory]
+        [InlineData("1,-2,-2,-2", "-2 -2 -2")]
+        [InlineData("//&\n1\n2&-3,4\n-5\n-98", "-3 -5 -98")]
+        [InlineData("1,2\n-3,-4", "-3 -4")]
+        [InlineData("1\n-2,-3,-4", "-3 -4")]
+        [InlineData("-1\n-2,-3\n-4,-99", "-1 -2 -3 -4 -99")]
+        public void Add_Negatives_NegativeIntegerExceptionThrown(string numberString, string negativeList)
+        {
+            //Act
+            var ex = Assert.Throws<NegativeIntegerException>(() => calc.Add(numberString));
+
+            //Assert
+            Assert.Contains("Detected invalid input, negative numbers are not allowed.  Negative Detected:", ex.Message);
+            Assert.Contains(negativeList, ex.Message);
+        }        
     }
 }
