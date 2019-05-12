@@ -152,7 +152,8 @@ namespace StringCalculatorTests
         /// </summary>
         [Theory]
         [InlineData("//[***]\n1***2***3", 6)]
-        [InlineData("//[;]\n2;1001", 2)]        
+        [InlineData("//[;]\n2;1001", 2)]
+        [InlineData("//[&&]\n1&&2,3", 6)]
         public void TestFunctionality7(string numberString, int expected)
         {
             //Act

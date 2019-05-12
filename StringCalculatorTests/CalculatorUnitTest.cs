@@ -183,23 +183,38 @@ namespace StringCalculatorTests
 
         /// <summary>
         /// Tests retrieval of a single non bracketed custom delimiter
-        /// returns null if no custom delimiter is found, otherwise should return one delimiter
         /// </summary>
-        /// <param name="numberString"></param>
+        /// <param name="delimiterPortion"></param>
         /// <param name="expected"></param>
         [Theory]
-        [InlineData("//;\n1;2", ";")]
-        [InlineData("//;\n1;2\n4", ";")]
-        public void GetCustomDelimiter_SingleNonBracketedDelimter_ReturnsDelimiter(string numberString, string expected)
+        [InlineData(";", ";")]
+        [InlineData("&", "&")]
+        public void GetCustomDelimiter_SingleNonBracketedDelimter_ReturnsDelimiter(string delimiterPortion, string expected)
         {
             //Act
-            string[] delimiter = calc.GetCustomDelimiters(numberString);
+            string[] delimiter = calc.GetCustomDelimiters(delimiterPortion);
 
             //Assert
             Assert.Equal(expected, delimiter[0]);
         }
 
+        /// <summary>
+        /// Tests retrieval of a single bracketed custom delimiter
+        /// </summary>
+        /// <param name="delimiterPortion"></param>
+        /// <param name="expected"></param>
+        [Theory]
+        [InlineData("[;]", ";")]
+        [InlineData("[&]", "&")]
+        [InlineData("[&&]", "&&")]
+        public void GetCustomDelimiter_BracketedDelimter_ReturnsDelimiter(string delimiterPortion, string expected)
+        {
+            //Act
+            string[] delimiter = calc.GetCustomDelimiters(delimiterPortion);
 
+            //Assert
+            Assert.Equal(expected, delimiter[0]);
+        }
 
         /// <summary>
         /// Tests the Add method in general
