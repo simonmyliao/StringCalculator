@@ -164,10 +164,10 @@ namespace StringCalculatorTests
         [InlineData("//;\n1;2", ";")]
         [InlineData("//;\n1;2\n4", ";")]
         [InlineData("1,2\n4", null)]  
-        public void GetCustomDelimiter_SingleDelimter_ReturnsDelimiter(string numberString, string expected)
+        public void GetCustomDelimiter_SingleNonBracketedDelimter_ReturnsDelimiter(string numberString, string expected)
         {
             //Act
-            string delimiter = calc.GetCustomDelimiter(numberString);
+            string delimiter = calc.GetCustomNonBracketedDelimiter(numberString);
 
             //Assert
             Assert.Equal(expected, delimiter);

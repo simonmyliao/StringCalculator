@@ -47,7 +47,7 @@ namespace StringCalculator
         public string[] ParseNumbers(string numberString)
         {
             int startOfNumberString = 0;
-            string customDelimiter = GetCustomDelimiter(numberString);
+            string customDelimiter = GetCustomNonBracketedDelimiter(numberString);
             List<string> delimiterList = new List<string>();
             delimiterList.Add(",");
             delimiterList.Add("\n");
@@ -65,7 +65,7 @@ namespace StringCalculator
         /// </summary>
         /// <param name="numberString">String consisting of delimiter information and numbers.</param>
         /// <returns>The custom delimiter if found, otherwise returns null.</returns>
-        public string GetCustomDelimiter(string numberString)
+        public string GetCustomNonBracketedDelimiter(string numberString)
         {
             int endDelimiterMarker = 0;
 
