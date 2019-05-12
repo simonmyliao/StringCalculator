@@ -44,7 +44,7 @@ namespace StringCalculatorTests
         public void SumInput_WithEmptyArrayOfNumberStrings_ReturnsSum()
         {
             //Arrange
-            string[] numbers = new string[] {};
+            string[] numbers = new string[] { };
 
             //Act
             int sum = calc.SumInput(numbers);
@@ -130,10 +130,11 @@ namespace StringCalculatorTests
 
         /// <summary>
         /// Tests that a single custom delimiter will separate the numbers into an array of strings
-        /// The Delimiter can be multiple chars long.
+        /// The Delimiter can be multiple chars long.  This is not specifically mentioned in the assignment 
+        /// but I figure include support for a better usabilty.
         /// </summary>
         [Fact]
-        public void ParseNumbers_WithCustomDelimiters_ReturnsStringArrayOfNumbers()
+        public void ParseNumbers_WithCustomNonBracketedDelimiters_ReturnsStringArrayOfNumbers()
         {
             //Act
             string[] set1 = calc.ParseNumbers("//;\n1;2;3");
@@ -153,24 +154,66 @@ namespace StringCalculatorTests
             Assert.Equal("2", set3[1]);
             Assert.Equal("3", set3[2]);
         }
-        
+
         /// <summary>
-        /// Tests retrieval of a single custom delimiter
-        /// returns null if no custom delimiter is found, otherwise should return one delimiter
+        /// Tests that a single custom bracketed delimiter will separate the numbers into an array of strings
+        /// The Delimiter can be multiple chars long.
         /// </summary>
-        /// <param name="numberString"></param>
-        /// <param name="expected"></param>
-        [Theory]
-        [InlineData("//;\n1;2", ";")]
-        [InlineData("//;\n1;2\n4", ";")]
-        [InlineData("1,2\n4", null)]  
-        public void GetCustomDelimiter_SingleDelimter_ReturnsDelimiter(string numberString, string expected)
+        [Fact]
+        public void ParseNumbers_WithCustomBracketedDelimiters_ReturnsStringArrayOfNumbers()
         {
             //Act
-            string delimiter = calc.GetCustomDelimiter(numberString);
+            string[] set1 = calc.ParseNumbers("//[;]\n1;2;3");
+            string[] set2 = calc.ParseNumbers("//[&]\n1&2\n3");
+            string[] set3 = calc.ParseNumbers("//[**]\n1**2\n3");
 
             //Assert
-            Assert.Equal(expected, delimiter);
+            Assert.Equal("1", set1[0]);
+            Assert.Equal("2", set1[1]);
+            Assert.Equal("3", set1[2]);
+
+            Assert.Equal("1", set2[0]);
+            Assert.Equal("2", set2[1]);
+            Assert.Equal("3", set2[2]);
+
+            Assert.Equal("1", set3[0]);
+            Assert.Equal("2", set3[1]);
+            Assert.Equal("3", set3[2]);
+        }
+
+        /// <summary>
+        /// Tests retrieval of a single non bracketed custom delimiter
+        /// </summary>
+        /// <param name="delimiterPortion"></param>
+        /// <param name="expected"></param>
+        [Theory]
+        [InlineData(";", ";")]
+        [InlineData("&", "&")]
+        public void GetCustomDelimiter_SingleNonBracketedDelimter_ReturnsDelimiter(string delimiterPortion, string expected)
+        {
+            //Act
+            string[] delimiter = calc.GetCustomDelimiters(delimiterPortion);
+
+            //Assert
+            Assert.Equal(expected, delimiter[0]);
+        }
+
+        /// <summary>
+        /// Tests retrieval of a single bracketed custom delimiter
+        /// </summary>
+        /// <param name="delimiterPortion"></param>
+        /// <param name="expected"></param>
+        [Theory]
+        [InlineData("[;]", ";")]
+        [InlineData("[&]", "&")]
+        [InlineData("[&&]", "&&")]
+        public void GetCustomDelimiter_BracketedDelimter_ReturnsDelimiter(string delimiterPortion, string expected)
+        {
+            //Act
+            string[] delimiter = calc.GetCustomDelimiters(delimiterPortion);
+
+            //Assert
+            Assert.Equal(expected, delimiter[0]);
         }
 
         /// <summary>

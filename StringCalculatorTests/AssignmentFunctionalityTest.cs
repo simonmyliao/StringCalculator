@@ -145,5 +145,22 @@ namespace StringCalculatorTests
             //Assert
             Assert.Equal(expected, sum);
         }
+
+        /// <summary>
+        /// Tests functionality in requirement 7.
+        /// 7.	Delimiters can be of any length with the following format:  “//[delimiter]\n” for example: “//[***]\n1***2***3” should return 6
+        /// </summary>
+        [Theory]
+        [InlineData("//[***]\n1***2***3", 6)]
+        [InlineData("//[;]\n2;1001", 2)]
+        [InlineData("//[&&]\n1&&2,3", 6)]
+        public void TestFunctionality7(string numberString, int expected)
+        {
+            //Act
+            int sum = calc.Add(numberString);
+
+            //Assert
+            Assert.Equal(expected, sum);
+        }
     }
 }
